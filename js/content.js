@@ -2,6 +2,11 @@
 document.head.insertAdjacentHTML('beforeend', '<style id="zoroark-timer-hiding">.timerbutton {} .zoroarkFakeTimerButton { float: right; }</style>');
 const timerHidingCSSRule = Array.from(document.styleSheets).find(sheet => sheet.ownerNode.id === "zoroark-timer-hiding").cssRules[0];
 
+const BattleState = {
+    PRE_TURN_1: Symbol("PRE_TURN_1"), // Battle has started but it's still not turn 1 (i.e. leads haven't finished going out)
+    STARTED: Symbol("STARTED")
+}
+const startedBattles = new Map(); // Map of battles that have started so we don't mess with replays and aren't fooled by fake replay controls that appear first
 
 // Identify which state a battle is in:
 // - Not started
@@ -9,13 +14,14 @@ const timerHidingCSSRule = Array.from(document.styleSheets).find(sheet => sheet.
 // - Between turns
 // - Ending
 // - Ended [at which point the observer should be killed so we don't revert]
-const startedBattles = new Set(); // Set of all battles that have started so we don't mess with replays and aren't fooled by fake replay controls that appear first
 function identifyBattleState(controls) {
     if (controls.querySelector(".timerbutton")) {
-        startedBattles.add(controls);
+        if (!startedBattles.has(controls)) startedBattles.set(controls, BattleState.PRE_TURN_1); // Once we see the timer, we're at least in pre-start
+
         if (controls.querySelector('[name="skipTurn"]')) {
             return "turnInProgress";
         } else {
+            if (controls.parentElement.querySelector(".turn")) startedBattles.set(controls, BattleState.STARTED); // Once we see the turn counter alongside the user's controls, the battle has fully started
             return "betweenTurns";
         }
     } else {
@@ -68,8 +74,8 @@ function observeBattleControls(controls) {
     const controlsObserver = new MutationObserver(mutations => mutations.forEach(mutation => {
         const state = identifyBattleState(controls);
         // If a turn is in progress, replace the real timer button with a fake disabled one
-        // But if there's no turn indicator yet then we're before turn 1 (i.e. in the animation of an automatic lead being sent out), so don't disable the timer
-        if (state == "turnInProgress" && controls.parentElement.querySelector(".turn")) {
+        // Unless we're pre-start (i.e. in the animation of an automatic lead being sent out), in which case there's no spoiler risk and people like to turn on the timer then
+        if (state == "turnInProgress" && startedBattles.get(controls) != BattleState.PRE_TURN_1) {
             createFakeTimerButton(controls);
         }
         // If the battle is in between turns, stop hiding the timer
