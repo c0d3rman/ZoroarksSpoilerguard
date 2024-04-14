@@ -1,0 +1,17 @@
+{
+   "name": "Zoroak's Spoilerguard",
+   "description": "Prevents spoiling the suspense of Pokemon Showdown battles by hiding the end-of-battle controls until the final turn ends.",
+   "version": "1.0.0",
+   "manifest_version": 3,
+   "content_scripts": [ {
+      "js": [ "js/content.js" ],
+      "matches": [ "*://play.pokemonshowdown.com/*", "*://*.psim.us/*" ]
+   } ],
+   "icons": {
+      "128": "icons/icon-128.png",
+      "16": "icons/icon-16.png",
+      "32": "icons/icon-32.png",
+      "48": "icons/icon-48.png"
+   },
+   "permissions": [ "storage" ]
+}
