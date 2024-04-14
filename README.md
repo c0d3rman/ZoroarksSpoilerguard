@@ -1,4 +1,4 @@
-# Zoroark's Spoilerguard
+# Zorua's Spoilerguard
 
 On Pokemon Showdown, the end-of-battle controls appear immediately when the battle ends. This happens right as the last turn begins to play out, before the animations have a chance to take place. Consequently, the results of a battle are often spoiled early - did I live the 50/50 damage roll? Did they dodge my Hydro Pump and get a Recover off? This extension restores the suspense of Pokemon Showdown battles by hiding the end-of-battle controls until the last turn finishes playing out.
 

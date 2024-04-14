@@ -1,6 +1,6 @@
 // Create a style tag for hiding and showing the real timer button
-document.head.insertAdjacentHTML('beforeend', '<style id="zoroark-timer-hiding">.timerbutton {} .zoroarkFakeTimerButton { float: right; }</style>');
-const timerHidingCSSRule = Array.from(document.styleSheets).find(sheet => sheet.ownerNode.id === "zoroark-timer-hiding").cssRules[0];
+document.head.insertAdjacentHTML('beforeend', '<style id="zorua-timer-hiding">.timerbutton {} .zoruaFakeTimerButton { float: right; }</style>');
+const timerHidingCSSRule = Array.from(document.styleSheets).find(sheet => sheet.ownerNode.id === "zorua-timer-hiding").cssRules[0];
 
 const BattleState = {
     PRE_TURN_1: Symbol("PRE_TURN_1"), // Battle has started but it's still not turn 1 (i.e. leads haven't finished going out)
@@ -63,10 +63,10 @@ function createFakeTimerButton(controls) {
     // Hide the real timer button (via CSS rule so timer ticks don't interfere with it)
     timerHidingCSSRule.style.setProperty("display", "none", "important");
     // Delete any previously-existing fake buttons
-    controls.querySelectorAll('.zoroarkFakeTimerButton').forEach(button => button.remove());
+    controls.querySelectorAll('.zoruaFakeTimerButton').forEach(button => button.remove());
     // Create the new fake button
-    sibling.insertAdjacentHTML('beforebegin', '<button disabled name="openTimer" class="button zoroarkFakeTimerButton"><i class="fa fa-hourglass-start"></i> Timer</button>');
-    controls.querySelector('.zoroarkFakeTimerButton').addEventListener('click', event => event.stopPropagation(), true); // Disable clicking
+    sibling.insertAdjacentHTML('beforebegin', '<button disabled name="openTimer" class="button zoruaFakeTimerButton"><i class="fa fa-hourglass-start"></i> Timer</button>');
+    controls.querySelector('.zoruaFakeTimerButton').addEventListener('click', event => event.stopPropagation(), true); // Disable clicking
 }
 
 
