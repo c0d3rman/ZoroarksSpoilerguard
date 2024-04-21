@@ -1,5 +1,5 @@
 // Create a style tag for hiding and showing the real timer button
-document.head.insertAdjacentHTML('beforeend', '<style id="zorua-timer-hiding">.timerbutton {} .zoruaFakeTimerButton { float: right; }</style>');
+document.head.insertAdjacentHTML('beforeend', '<style id="zorua-timer-hiding">.timerbutton:not(:hover) {} .timerbutton { width: 70px; } .zoruaFakeTimerButton { float: right; text-decoration: line-through; width: 70px; } .zoruaFakeTimerButton:not(:hover) { filter: brightness(0); }</style>');
 const timerHidingCSSRule = Array.from(document.styleSheets).find(sheet => sheet.ownerNode.id === "zorua-timer-hiding").cssRules[0];
 
 const BattleState = {
@@ -57,11 +57,8 @@ addEventListener("load", _ => setTimeout(() => [...document.getElementsByClassNa
 
 
 function createFakeTimerButton(controls) {
-    // If there is a real timer button place the fake one next to it, otherwise place it before the "Skip turn" button
-    let sibling = controls.querySelector('.timerbutton');
-    if (!sibling) sibling = controls.querySelector('[name="skipTurn"]');
-    // Hide the real timer button (via CSS rule so timer ticks don't interfere with it)
-    timerHidingCSSRule.style.setProperty("display", "none", "important");
+    // Place the fake timer button before the "Skip turn" button
+    const sibling = controls.querySelector('[name="skipTurn"]');
     // Delete any previously-existing fake buttons
     controls.querySelectorAll('.zoruaFakeTimerButton').forEach(button => button.remove());
     // Create the new fake button
@@ -73,14 +70,14 @@ function createFakeTimerButton(controls) {
 function observeBattleControls(controls) {
     const controlsObserver = new MutationObserver(mutations => mutations.forEach(mutation => {
         const state = identifyBattleState(controls);
-        // If a turn is in progress, replace the real timer button with a fake disabled one
+        // If a turn is in progress, black out the real timer button
         // Unless we're pre-start (i.e. in the animation of an automatic lead being sent out), in which case there's no spoiler risk and people like to turn on the timer then
         if (state == "turnInProgress" && startedBattles.get(controls) != BattleState.PRE_TURN_1) {
-            createFakeTimerButton(controls);
+            timerHidingCSSRule.style.setProperty("filter", "brightness(0)", "important");
         }
         // If the battle is in between turns, stop hiding the timer
         else if (state == "betweenTurns") {
-            timerHidingCSSRule.style.removeProperty("display");
+            timerHidingCSSRule.style.removeProperty("filter");
         }
         // If the battle is ending, hide all spoilers
         else if (state == "ending") {
